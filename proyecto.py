@@ -1,6 +1,10 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
+class CalcError(Exception):
+    def __init__(self, message):
+        self.message = message
+
 reserved = {
     'Program' : 'PROGRAM',
     'main' : 'MAIN',
@@ -61,7 +65,7 @@ def t_NFLOAT(t):
     return t
 
 def t_SCHAR(t):
-    r'\'.\''  
+    r'\'.\''
     return t
 
 def t_SSTRING(t):
@@ -83,12 +87,73 @@ def t_error(t):
 # Build the lexer
 lexer = lex.lex()
 
+# Estructura
+# { "nombre de vairable": {
+#    "type": "tipo de variable",
+#    "value": "valor de la variable"
+# }}
+# ejemplo de llamada
+# variablesGlobales["nombre de variable"]["type"]
+variablesGlobales = {}
+# Estructura
+# { "nombre de funcion" : {
+#    "type": "tipo de funcion"
+#    "var": {
+#         "nombre de variable":{...}},
+#    "param": {
+#         "nombre de parametro":{...}}
+# }}
+# ejemplo de llamada
+# variablesFunciones["nombre de funcion"]["var"]["nombre de variable"]["type"]
+variablesFunciones = {}
+# Estructura
+# { "variableSystema ##" : {
+#    "type": "tipo de variable",
+#    "value": "valor de la variable"},
+#   "contador": ##
+# }
+# ejemplo de llamada
+# variablesTemporales["variableSystema##"]["type"]
+variablesTemporales = {"contador": 0}
+
 def p_program(p):
-     'program : PROGRAM SVAR PUNCOM decvar decfun MAIN LPAREN RPAREN LPAREN2 estatutos RPAREN2'
+     'program : programInicio decfuntemp programMain'
      print("Compile!!")
+
+# Solo sirve para imprimir una vez variablesFunciones, recordar borrar.
+def p_decfuntemp(p):
+     'decfuntemp : decfun'
+     print(variablesFunciones)
+     pass
+
+def p_programMain(p):
+     'programMain : MAIN LPAREN RPAREN LPAREN2 estatutos RPAREN2'
+     #acciones = p[5]
+     pass
+
+def p_programInicio(p):
+     'programInicio : PROGRAM SVAR PUNCOM decvar'
+     lista = p[4]
+     for x in lista:
+          variables = x[1]
+          tipo = x[0]
+          for var in variables:
+               if (variablesGlobales.get(var)==None):
+                    variablesGlobales[var]={"type":tipo}
+               else:
+                    print("ERROR: Nombre de variable global invalido")
+                    raise CalcError("Variable repetida")
+     print("Variables globales")
+     print(variablesGlobales)
+     pass
 
 def p_decvar(p):
      'decvar : VAR tipo SVAR nomvar decvar2'
+     temp=[p[3]]
+     temp.extend(p[4])
+     temp2=[[p[2],temp]]
+     temp2.extend(p[5])
+     p[0]=temp2
      pass
 
 def p_decvar2(p):
@@ -96,6 +161,14 @@ def p_decvar2(p):
      decvar2 : tipo SVAR nomvar decvar2
              | empty
      '''
+     if p[1] == None:
+          p[0]=[]
+     else:
+          temp=[p[2]]
+          temp.extend(p[3])
+          temp2=[[p[1],temp]]
+          temp2.extend(p[4])
+          p[0]=temp2
      pass
 
 def p_nomvar(p):
@@ -103,6 +176,12 @@ def p_nomvar(p):
      nomvar : COMA SVAR nomvar
             | PUNCOM
      '''
+     if p[1] != ';':
+          temp=[p[2]]
+          temp.extend(p[3])
+          p[0]=temp
+     else:
+          p[0]=[]
      pass
 
 def p_tipo(p):
@@ -111,10 +190,60 @@ def p_tipo(p):
           | FLOAT
           | CHAR
      '''
-     pass
+     p[0]=p[1]
 
 def p_decfun(p):
-     'decfun : MODULE funtipo SVAR LPAREN funpara RPAREN PUNCOM decvar LPAREN2 estatutos RPAREN2 decfun2'
+     'decfun : decfunCodigo decfun2'
+     pass
+
+def p_decfunCodigo(p):
+     'decfunCodigo : decfunCodigoIni LPAREN2 estatutos RPAREN2'
+     #nombre = p[1]
+     #acciones = p[3]
+     pass
+     
+
+def p_decfunCodigoIni(p):
+     'decfunCodigoIni : MODULE funtipo SVAR LPAREN funpara RPAREN PUNCOM decvar'
+     nombre = p[3]
+     funtipo = p[2]
+     listaParametros = p[5]
+     listaVariables = p[8]
+     if (variablesFunciones.get(nombre)==None):
+          variablesFunciones[nombre]={}
+          variablesFunciones[nombre]["type"]=funtipo
+          variablesFunciones[nombre]["param"]={}
+          for x in listaParametros:
+               variable = x[1]
+               tipo = x[0]
+               if (variablesGlobales.get(variable)!=None):
+                    print("ERROR: Nombre de variable de parametro invalido por variable global")
+                    raise CalcError("Variable repetida")
+               elif (variablesFunciones[nombre]["param"].get(variable)!=None):
+                    print("ERROR: Nombre de variable de parametro invalido")
+                    raise CalcError("Variable repetida")
+               else:
+                    variablesFunciones[nombre]["param"][variable]={"type":tipo}
+          variablesFunciones[nombre]["var"]={}
+          for x in listaVariables:
+               variables = x[1]
+               tipo = x[0]
+               for var in variables:
+                    if (variablesGlobales.get(var)!=None):
+                         print("ERROR: Nombre de variable de funcion invalido por variable global")
+                         raise CalcError("Variable repetida")
+                    elif (variablesFunciones[nombre]["param"].get(var)!=None):
+                         print("ERROR: Nombre de variable de funcion invalido por variable de parametro")
+                         raise CalcError("Variable repetida")
+                    elif (variablesFunciones[nombre]["var"].get(var)!=None):
+                         print("ERROR: Nombre de variable de funcion invalido")
+                         raise CalcError("Variable repetida")
+                    else:
+                         variablesFunciones[nombre]["var"][var]={"type":tipo}
+     else:
+          print("ERROR: Nombre de funcion invalido")
+          raise CalcError("Funcion repetida")
+     p[0] = nombre
      pass
 
 def p_decfun2(p):
@@ -129,6 +258,7 @@ def p_funtipo(p):
      funtipo : tipo
              | VOID
      '''
+     p[0]=p[1]
      pass
 
 def p_funpara(p):
@@ -136,6 +266,12 @@ def p_funpara(p):
      funpara : tipo SVAR funpara2
              | empty
      '''
+     if p[1] != None:
+          temp = [[p[1],p[2]]]
+          temp.extend(p[3])
+          p[0]=temp
+     else:
+          p[0]=[]
      pass
 
 def p_funpara2(p):
@@ -143,6 +279,12 @@ def p_funpara2(p):
      funpara2 : COMA tipo SVAR funpara2
               | empty
      '''
+     if p[1] != None:
+          temp = [[p[2],p[3]]]
+          temp.extend(p[4])
+          p[0]=temp
+     else:
+          p[0]=[]
      pass
 
 def p_estatutos(p):
@@ -157,48 +299,134 @@ def p_estatutos(p):
                | retorno
                | empty
      '''
+     #print("***** BANDERA ******")
+     #print(p[1])
+     #print("********************")
      pass
 
 def p_asignacion(p):
      'asignacion : SVAR EQUAL asitipos PUNCOM'
+     final = []
+     if p[3][1] == "expr":
+          if p[3][0][0] != None:
+               final.extend(p[3][0])
+          final.append( ('=', p[3][0][len(p[3][0])-1][3], None, p[1]) )
+     else:
+          final.append( ('=', p[3][0], None, p[1]) )
+     p[0] = final
      pass
 
 def p_asitipos(p):
-     '''
-     asitipos : expr
-              | SCHAR
-     '''
+     'asitipos : expr'
+     p[0]=(p[1],"expr")
      pass
 
+def p_asitipos02(p):
+     'asitipos : SCHAR'
+     p[0]=(p[1][1],"char")
+     pass
+
+# falta comprobar si son ints o floats para saber el tipo de la variable temporal
+# y despues crear la variable temporal
+# checar el tipo del return de la funcion
 def p_expr(p):
+     'expr : exprCode'
+     pila = []
+     final = []
+     for x in p[1]:
+          if (x == '*' or x == '/' or x == '+' or x == '-'):
+               y = pila.pop()
+               z = pila.pop()
+               variablesTemporales["contador"] = variablesTemporales["contador"] + 1
+               varTemp = "variableSystema " + str(variablesTemporales["contador"])
+               temp2 = (x,z,y,varTemp)
+               pila.append(varTemp)
+               final.append(temp2)
+          elif type(x) != type(1):
+               if x[0] == "Sys funcion":
+                    parametros = []
+                    temp2 = []
+                    for para,tipo in x[2]:
+                         if tipo == "char":
+                              parametros.append(para)
+                         else:
+                              if para[0][0] == None:
+                                   parametros.append(para[0][3])
+                              else:
+                                   parametros.append(para[len(para)-1][3])
+                                   temp2.extend(para)
+                    variablesTemporales["contador"] = variablesTemporales["contador"] + 1
+                    varTemp = "variableSystema " + str(variablesTemporales["contador"])
+                    temp2.append(("callr",x[1],parametros,varTemp))
+                    pila.append(varTemp)
+                    final.extend(temp2)
+               else:
+                    pila.append(x)
+          else:
+               pila.append(x)
+     if final == []:
+          final = [(None,None,None,p[1][0])]
+     p[0] = final
+     pass
+
+def p_exprCode(p):
      '''
-     expr : expr1 '+' expr
-          | expr1 '-' expr
-          | expr1
+     exprCode : expr1 '+' exprCode
+              | expr1 '-' exprCode
      '''
+     temp=p[1]
+     temp.extend(p[3])
+     temp.append(p[2])
+     p[0]=temp
+     pass
+
+def p_expr02(p):
+     'exprCode : expr1'
+     p[0]=p[1]
      pass
 
 def p_expr1(p):
      '''
      expr1 : expr2 '*' expr1
            | expr2 '/' expr1
-           | expr2
      '''
+     temp=p[1]
+     temp.extend(p[3])
+     temp.append(p[2])
+     p[0]=temp
+     pass
+
+def p_expr12(p):
+     'expr1 : expr2'
+     p[0]=p[1]
      pass
 
 def p_expr2(p):
      '''
-     expr2 : LPAREN expr RPAREN
+     expr2 : LPAREN exprCode RPAREN
            | term
      '''
+     if p[1] != '(':
+          p[0]=[p[1]]
+     else:
+          p[0]=p[2]
      pass
 
 def p_term(p):
      '''
-     term : SVAR posfun
-          | NINT
+     term : NINT
           | NFLOAT
      '''
+     p[0] = p[1]
+     pass
+
+# Si posfun no es vacio, hay que checar que los parametros sean los correctos.
+def p_term02(p):
+     'term : SVAR posfun'
+     if p[2] == []:
+          p[0] = p[1]
+     else:
+          p[0] = ("Sys funcion",p[1], p[2])
      pass
 
 def p_posfun(p):
@@ -206,6 +434,10 @@ def p_posfun(p):
      posfun : LPAREN parametros RPAREN
             | empty
      '''
+     if p[1] != None:
+          p[0] = p[2]
+     else:
+          p[0] = []
      pass
 
 def p_parametros(p):
@@ -213,6 +445,12 @@ def p_parametros(p):
      parametros : asitipos parametros2
                 | empty
      '''
+     if p[1] != None:
+          temp = [p[1]]
+          temp.extend(p[2])
+          p[0]=temp
+     else:
+          p[0]=[]
      pass
 
 def p_parametros2(p):
@@ -220,6 +458,12 @@ def p_parametros2(p):
      parametros2 : COMA asitipos parametros2
                  | empty
      '''
+     if p[1] != None:
+          temp = [p[2]]
+          temp.extend(p[3])
+          p[0]=temp
+     else:
+          p[0]=[]
      pass
 
 def p_llamada(p):
@@ -278,7 +522,7 @@ def p_repeticion(p):
      pass
 
 def p_condicional(p):
-     'condicional : WHILE LPAREN expresion RPAREN DO LPAREN2 estatutos RPAREN2'
+     'condicional : DO LPAREN expresion RPAREN WHILE LPAREN2 estatutos RPAREN2'
      pass
 
 def p_expresion(p):
@@ -354,15 +598,16 @@ var
     int i, j, p;
     float valor;
 
-module int fact (int j);
+module int fact (int j2, char f);
 var
-    int i;
+    int i2;
 {
     i = j + (p - j * 2 + j);
+    valor = 'm';
     if(j == 1) then
         {return(j);}
     else
-        {return(j * fact(j - 1));}
+        {return(j * fact(j - 1, 'c'));}
 }
 
 module void pinta (int y);
@@ -370,7 +615,7 @@ var
     int x;
 {
     x = 1;
-    while (x < 11) do
+    do (x < 11) while
         {
             Circle(y + x * 5);
             Color(x + 10);
@@ -387,7 +632,7 @@ main()
     i = fact(p);
     from i = 0 to 9 do
         {pinta(i * j);}
-    while (i < 10) do
+    do (i < 10) while
     {
         write("Hello World", fact(i));
         i = i + 1;
@@ -406,5 +651,8 @@ logging.basicConfig(
     filemode = "w",
     format = "%(filename)10s:%(lineno)4d:%(message)s"
 )
-log = logging.getLogger()
-yacc.parse(data, debug=log)
+try:
+     log = logging.getLogger()
+     yacc.parse(data, debug=log)
+except CalcError:
+    print()
