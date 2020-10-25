@@ -222,6 +222,8 @@ Generación de código intermedio inicial
 
 - El arreglo de instrucciones de cada funcion es checado en busca de errores de semantica estatica.
 
+- Se considero que el usuario puede no declarar variables.
+
 ### Diferencias entre la GramaticaInicial y GramaticaActual
 - Se agrego la repeticion condicional While Do.
 
