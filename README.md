@@ -202,3 +202,129 @@ main()
     }
     
 }
+
+## Avance 3
+24 de octubre 2020
+
+### Entrega
+Generación de código intermedio inicial
+
+### Avance
+- Se agregaron los tokens: '>=', '!=' y '<='
+
+- Las variables del sistema ahora tienen un espacio entre el nombre y su numero. Esto ayuda a que el usuario no pueda por accidente crear una variable con el mismo nombre que una variable del sistema, ya que las variables del usuario son sin espacios.
+
+- Se establecieron las estructuras que ira generando el programa en forma de cuadruplos.
+
+- Todos los estatutos mandan su arreglo de instrucciones completo en el formato requerido.
+
+- El arreglo de instrucciones del main es checado en busca de errores de semantica estatica.
+
+- El arreglo de instrucciones de cada funcion es checado en busca de errores de semantica estatica.
+
+### Diferencias entre la GramaticaInicial y GramaticaActual
+- Se agrego la repeticion condicional While Do.
+
+### Ejemplo de codigo de entrada
+
+Program MeMySelf;
+
+var
+
+    int i, j, p;
+    
+    float valor;
+    
+    char exam;
+    
+module int fact (int j2, char f);
+
+var
+
+    int i2;
+    
+{
+
+    i = j + (p - j * 2 + j);
+    
+    exam = 'm';
+    
+    if(j == 1 + 2 & j == 'm') then
+    
+        {if(true | false) then
+        
+          {if(true & false | true) then
+          
+          {return(j);}}}
+          
+    else
+    
+        {return(j * fact(j - 1, 'c'));}
+        
+    return(9);
+    
+}
+
+module void pinta (int y);
+
+var
+
+    int x;
+    
+    float m;
+    
+{
+
+    x = 10;
+    
+    write(x,m+1,"q");
+    
+    read(y);
+    
+    pinta(9);
+    
+    m = 1 / 2;
+    
+    while (x < 11) do
+    
+        {
+        
+            Circle(y + x * 5);
+            
+            Color(x + 10);
+            
+            Size(10 - x);
+            
+            x = x + 1;
+            
+        }
+        
+}
+
+main()
+
+{
+
+    read(p,q);
+    
+    j = p * 2;
+    
+    Point(0, 0);
+    
+    i = fact(p, 'f');
+    
+    from i = 0 to 9 do
+    
+        {pinta(i * j);}
+        
+    while (i < 10) do
+    
+    {
+    
+        write("Hello World", fact(i,exam) + 1, 'l');
+        
+        i = i + 1;
+        
+    }
+    
+}
