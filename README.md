@@ -330,3 +330,130 @@ main()
     }
     
 }
+
+## Avance 4
+30 de octubre 2020
+
+### Entrega
+Generación de código intermedio para estatutos no-lineales e inicio de funciones
+
+### Avance
+- Se reestructuraron las variables virtuales. Se junto en una sola variable la informacion de todas las funcionas.
+
+- Se creo una tabla de 3 dimenciones con los tipos de variables y tipos de operadores dando como resultado el tipo de valor del resultado.
+
+- Se creo una funcion dedicada a determinar el tipo de valor, ya sea de un valor constante o de una variable.
+
+- Se creo una funcion que regresa un apuntador a la variable buscada.
+
+- Se creo una funcion run para iniciar la ejecucion de las instrucciones.
+
+- Se creo una funcion call para ejecutar las instrucciones de la funcion activa con variables locales por llamada a la funcion.
+
+- Se creo una funcion por cada accion esperada a ejecutar, para todos los estatutos excepto las funciones especiales.
+
+- Se movio el chequeo de la semantica estatica para analizar todas las instrucciones en un solo lugar.
+
+- La creacion de funciones aparte de main se hizo opcional.
+
+- Se arreglo un problema con las expresiones, el orden de evaluacion se tuvo que corregir.
+
+- Todas las constantes del codigo se guardan en una variable del sistema.
+
+- El estatuto de repeticion no condicional, FROM TO, ahora acepta expreciones para la inicializacion de la variable y el valor limite.
+
+### Ejemplo de codigo de entrada
+
+Program MeMySelf;
+
+var
+
+    int i, j, p, q;
+    
+    float valor;
+    
+    char exam;
+    
+module int fact (int j2, char f);
+
+var
+
+    int i2;
+    
+{
+
+    i2 = j2 + (j2 * 2);
+    
+    if(j2 == 1) then
+    
+        {return(j2);}
+        
+    else
+    
+        {return(j2 * fact(j2 - 1, 'c'));}
+        
+    return(9);
+    
+}
+
+module void pinta (int y);
+
+var
+
+    int x;
+    
+    float m;
+    
+{
+
+    x = 10;
+    
+    m = 1 / 2;
+    
+    write(x,m+1,"q");
+    
+    while (x < 11) do
+    
+        {
+        
+            Circle(y + x * 5);
+            
+            Color(x + 10);
+            
+            Size(10 - x);
+            
+            x = x + 1;
+            
+        }
+        
+}
+
+main()
+
+{
+
+    read(p,q);
+    
+    j = p * 2;
+    
+    exam = 'm';
+    
+    Point(0, 0);
+    
+    i = fact(p, 'f');
+    
+    from i = 0 + 3 to 9 - 1 do
+    
+        {pinta(i * j);}
+        
+    while (i < 10) do
+    
+    {
+    
+        write("Hello World", fact(i,exam) + 1, 'l');
+        
+        i = i + 1;
+        
+    }
+    
+}
