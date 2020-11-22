@@ -1,6 +1,27 @@
 import ply.lex as lex
 import ply.yacc as yacc
 import copy
+import turtle
+
+data = '''
+Program MeMySelf;
+var
+     int x;
+     char y;
+
+module void funcion(int m);
+{
+     read(x,y);
+}
+
+main()
+{
+     x=3;
+     write(x);
+     funcion(x);
+     write(x,y,"Hello World");
+}
+'''
 
 class CalcError(Exception):
     def __init__(self, message):
@@ -27,10 +48,9 @@ reserved = {
     'false' : 'FALSE',
     'from' : 'FROM',
     'to' : 'TO',
+    'Turn' : 'TURN',
     'Line' : 'LINE',
     'Point' : 'POINT',
-    'Circle' : 'CIRCLE',
-    'Arc' : 'ARC',
     'PenUp' : 'PENUP',
     'PenDown' : 'PENDOWN',
     'Color' : 'COLOR',
@@ -73,7 +93,7 @@ def t_SCHAR(t):
     return t
 
 def t_SSTRING(t):
-    r'\".*\"'  
+    r'\".*\"'
     return t
 
 def t_SVAR(t):
@@ -362,7 +382,7 @@ def buscaTipo(tipo):
                return variables[variables["active sys"]]["var"][tipo]["type"]
           elif variables[variables["active sys"]]["param"].get(tipo) != None:
                return variables[variables["active sys"]]["param"][tipo]["type"]
-     print("ERROR: Variable no encontrada")
+     print("ERROR: Tipo de variable no encontrada")
      raise CalcError("Variable invalida")
 
 def buscaVariable(temparam,tempvar,var):
@@ -389,8 +409,6 @@ def buscaVariable(temparam,tempvar,var):
 # (return, null, null, result)
 # (write, null, null, result)
 # (read, null, null, result)
-
-# checar que las funciones que no son void, tengan un return
 
 def op(op,opdo1,opdo2):
      if op == '*':
@@ -429,7 +447,7 @@ def call(function,param,var):
           b = variables[function]["run"][contador][1]
           c = variables[function]["run"][contador][2]
           d = variables[function]["run"][contador][3]
-          print(contador + 1, ":", a, "|", b, "|", c, "|", d)
+          # print(contador + 1, ":", a, "|", b, "|", c, "|", d)
           if a == "read":
                vard = buscaVariable(param,var,d)
                vard["value"] = read(vard["type"])
@@ -457,7 +475,6 @@ def call(function,param,var):
                tcont = 0
                for x in tparam:
                     varc = buscaVariable(param,var,c[tcont])
-                    print(varc)
                     if varc.get("value") == None:
                          print("ERROR: Variable no inicializada")
                          raise CalcError("Expresion invalida")
@@ -493,11 +510,55 @@ def call(function,param,var):
                     print("ERROR: Variable no inicializada")
                     raise CalcError("Expresion invalida")
                print(vard["value"])
-          elif a != "callf":
+          elif a == "callf":
+               tempValues = []
+               for value in c:
+                    varc = buscaVariable(param,var,value)
+                    tempValues.append(varc["value"])
+               callf(b,tempValues)
+          else:
                print("ERROR: CALL01")
                raise CalcError("Error en sistema")
           contador = contador + 1
      return "Sys None"
+
+# Funciones especiales
+# PenUp() => turtle.penup()
+# PenDown() => turtle.pendown()
+# Point() => turle.dot(10, 0, 0, 0)
+# Turn(nomber) => turtle.left(nomber)
+# Line(nomber) => turtle.forward(nomber)
+# Color(string) => turtle.pencolor(string)
+# Size(nomber) => turtle.pensize(nomber)
+
+def openOutput():
+     if variables["output active"] == False:
+          variables["output active"] = True
+          turtle.shape("turtle")
+
+def callf(func,param):
+     openOutput()
+     if func == "PenUp":
+          turtle.penup()
+     elif func == "PenDown":
+          turtle.pendown()
+     elif func == "Point":
+          turtle.dot(10,0,0,0)
+     elif func == "Turn":
+          turtle.left(param[0])
+     elif func == "Line":
+          turtle.forward(param[0])
+     elif func == "Color":
+          turtle.pencolor(param[0])
+     elif func == "Size":
+          turtle.pensize(param[0])
+     else:
+          print("ERROR: CALLF01")
+          raise CalcError("Error en sistema")
+
+def closeOutput():
+     if variables["output active"] == True:
+          turtle.exitonclick()
 
 def read(tipo):
      if tipo == "int":
@@ -515,19 +576,22 @@ def read(tipo):
 
 def run():
      variables["active sys"] = "main"
+     variables["output active"] = False
      call("main",variables["main"]["param"],variables["main"]["var"])
-     print("Run!!")
+     closeOutput()
+     # print("Run!!")
+
 
 def p_program(p):
      'program : programInicio decvar decfuntemp programMain'
      for funcion in variables:
           if funcion != "active sys":
-               print("*** ", funcion)
+               # print("*** ", funcion)
                variables["active sys"] = funcion
-               contador = 1
+               # contador = 1
                for a,b,c,d in variables[funcion]["run"]:
-                    print(contador, ":", a, "|", b, "|", c, "|", d)
-                    contador = contador + 1
+                    # print(contador, ":", a, "|", b, "|", c, "|", d)
+                    # contador = contador + 1
                     if (a == '+' or a == '-' or a == '*' or a == '/' or a == '==' or a == '!=' or a == '<=' or a == '>=' or a == '<' or a == '>' or a == '&' or a == '|'):
                          tb = buscaTipo(b)
                          tc = buscaTipo(c)
@@ -537,12 +601,12 @@ def p_program(p):
                          variables[variables["active sys"]]["var"][d] = {"type": tablaTipos[tb][tc][a]}
                     elif a == "gotof":
                          if buscaTipo(b) != "bool":
-                              print("ERROR: Error en compilacion")
+                              print("ERROR: PROGRAM02")
                               raise CalcError("Expresion invalida")
                     elif a == "=":
                          tb = buscaTipo(b)
                          td = buscaTipo(d)
-                         if (tb != td and (tb == "int" and td != "float")):
+                         if (tb != td or (tb == "int" and td != "float")):
                               print("ERROR: Tipo de variable invalido en asignacion")
                               raise CalcError("Estatuto invalido")
                     elif a == "return":
@@ -562,7 +626,7 @@ def p_program(p):
                          else:
                               variables[variables["active sys"]]["var"][d] = {"type": variables[b]["type"]}
                          if len(variables[b]["param"]) != len(c):
-                              print("ERROR: Cantidad de parametros invalido")
+                              print("ERROR: Cantidad de parametros invalida")
                               raise CalcError("Estatuto invalido")
                          cont = 0
                          for param in variables[b]["param"]:
@@ -582,13 +646,13 @@ def p_program(p):
                               print("ERROR: Llamada a main")
                               raise CalcError("Estatuto invalido")
                          if len(variables[b]["param"]) != len(c):
-                              print("ERROR: Cantidad de parametros invalido")
+                              print("ERROR: Cantidad de parametros invalida")
                               raise CalcError("Estatuto invalido")
                          cont = 0
                          for param in variables[b]["param"]:
                               tc = buscaTipo(c[cont])
                               if (variables[b]["param"][param]["type"] != tc and (variables[b]["param"][param]["type"] == "int" and tc != "float")):
-                                   print("ERROR: Tipo de parametro esperado invalido en return")
+                                   print("ERROR: Tipo de parametro esperado invalido")
                                    raise CalcError("Estatuto invalido")
                               cont = cont + 1
                     elif a == "read" or a == "write":
@@ -743,10 +807,6 @@ def p_estatutos(p):
                | repeticion estatutos
                | funespecial estatutos
      '''
-     # print("***** BANDERA ******")
-     # print(p[1])
-     # print("********************")
-
      temp = []
      temp.extend(p[1])
      temp.extend(p[2])
@@ -758,9 +818,6 @@ def p_estatutos02(p):
      estatutos : retorno
                | empty
      '''
-     #print("***** BANDERA ******")
-     #print(p[1])
-     #print("********************")
      if p[1] != None:
           p[0] = p[1]
      else:
@@ -892,24 +949,19 @@ def p_expr2(p):
      pass
 
 def p_term(p):
-     'term : NINT'
+     '''
+     term : NINT
+          | NFLOAT
+     '''
      variables[variables["active sys"]]["var"]["contador sys"] = variables[variables["active sys"]]["var"]["contador sys"] + 1
      varTemp = variables["active sys"] + " " + str(variables[variables["active sys"]]["var"]["contador sys"])
-     variables[variables["active sys"]]["var"][varTemp] = {"type": "int","value": p[1]}
-     p[0] = varTemp
-     pass
-
-def p_term02(p):
-     'term : NFLOAT'
-     variables[variables["active sys"]]["var"]["contador sys"] = variables[variables["active sys"]]["var"]["contador sys"] + 1
-     varTemp = variables["active sys"] + " " + str(variables[variables["active sys"]]["var"]["contador sys"])
-     variables[variables["active sys"]]["var"][varTemp] = {"type": "int","value": p[1]}
+     variables[variables["active sys"]]["var"][varTemp] = {"type": buscaTipo(p[1]),"value": p[1]}
      p[0] = varTemp
      pass
 
 def p_term01(p):
      'term : SVAR posfun'
-     if p[2] == []:
+     if p[2] == None:
           p[0] = p[1]
      else:
           p[0] = ("Sys funcion",p[1], p[2])
@@ -922,8 +974,6 @@ def p_posfun(p):
      '''
      if p[1] != None:
           p[0] = p[2]
-     else:
-          p[0] = []
      pass
 
 def p_parametros(p):
@@ -954,7 +1004,6 @@ def p_parametros2(p):
 
 def p_llamada(p):
      'llamada : SVAR LPAREN parametros RPAREN PUNCOM'
-     parametros = []
      parametros = []
      final = []
      for x in p[3]:
@@ -1209,29 +1258,41 @@ def p_nocondicional(p):
 def p_funespecial(p):
      '''
      funespecial : LINE LPAREN expr RPAREN PUNCOM
-                 | POINT LPAREN expr COMA expr RPAREN PUNCOM
-                 | CIRCLE LPAREN expr RPAREN PUNCOM
-                 | ARC LPAREN expr RPAREN PUNCOM
+                 | TURN LPAREN expr RPAREN PUNCOM
+                 | SIZE LPAREN expr RPAREN PUNCOM
+     '''
+     temp = []
+     param = []
+     if p[3][0][0] == None:
+          param.append(p[3][0][3])
+     else:
+          temp.extend(p[3])
+          param.append(p[3][len(p[3])-1][3])
+     temp.append(("callf",p[1],param,None))
+     p[0] = temp
+     pass
+
+def p_funespecial02(p):
+     '''
+     funespecial : POINT LPAREN RPAREN PUNCOM
                  | PENUP LPAREN RPAREN PUNCOM
                  | PENDOWN LPAREN RPAREN PUNCOM
-                 | COLOR LPAREN expr RPAREN PUNCOM
-                 | SIZE LPAREN expr RPAREN PUNCOM
                  | CLEAR LPAREN RPAREN PUNCOM
      '''
      temp = []
      param = []
-     if (p[1] != "Clear" and p[1] != "PenDown" and p[1] != "PenUp"):
-          if p[3][0][0] == None:
-               param.append(p[3][0][3])
-          else:
-               temp.extend(p[3])
-               param.append(p[3][len(p[3])-1][3])
-          if p[1] == "Point":
-               if p[5][0][0] == None:
-                    param.append(p[5][0][3])
-               else:
-                    temp.extend(p[5])
-                    param.append(p[5][len(p[5])-1][3])
+     temp.append(("callf",p[1],param,None))
+     p[0] = temp
+     pass
+
+def p_funespecial03(p):
+     'funespecial : COLOR LPAREN SSTRING RPAREN PUNCOM'
+     temp = []
+     param = []
+     variables[variables["active sys"]]["var"]["contador sys"] = variables[variables["active sys"]]["var"]["contador sys"] + 1
+     varTemp = variables["active sys"] + " " + str(variables[variables["active sys"]]["var"]["contador sys"])
+     variables[variables["active sys"]]["var"][varTemp] = {"type": "string","value": p[3].replace('"', '')}
+     param.append(varTemp)
      temp.append(("callf",p[1],param,None))
      p[0] = temp
      pass
@@ -1246,59 +1307,6 @@ def p_error(p):
 
 # Build the parser
 yacc.yacc(debug=True)
-
-data = '''
-Program MeMySelf;
-var
-    int i, j, p, q;
-    float valor;
-    char exam;
-
-module int fact (int j2, char f);
-var
-    int i2;
-{
-    i2 = j2 + (j2 * 2);
-    if(j2 == 1) then
-        {return(j2);}
-    else
-        {return(j2 * fact(j2 - 1, 'c'));}
-    return(9);
-}
-
-module void pinta (int y);
-var
-    int x;
-    float m;
-{
-    x = 10;
-    m = 1 / 2;
-    write(x,m+1,"q");
-    while (x < 11) do
-        {
-            Circle(y + x * 5);
-            Color(x + 10);
-            Size(10 - x);
-            x = x + 1;
-        }
-}
-
-main()
-{
-    read(p,q);
-    j = p * 2;
-    exam = 'm';
-    Point(0, 0);
-    i = fact(p, 'f');
-    from i = 0 + 3 to 9 - 1 do
-        {pinta(i * j);}
-    while (i < 10) do
-    {
-        write("Hello World", fact(i,exam) + 1, 'l');
-        i = i + 1;
-    }
-}
-'''
 
 # Give the lexer some input
 lexer.input(data)
