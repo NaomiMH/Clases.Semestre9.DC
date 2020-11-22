@@ -457,3 +457,22 @@ main()
     }
     
 }
+
+## Avance 7
+21 de noviembre 2020
+
+### Entrega
+Ejecución de Aplicación particular y Documentación parcial
+
+### Avance
+- Se creo el documento
+
+- Se completo todo dejando pendiente parte de la Documentacion del Codigo del Proyecto
+
+- Se corrigieron errores en el goto y gotof dentro de los estatutos de repeticion y desicion.
+
+- Se agrego una variable del sistema "output active" que controlara el estado del output grafico con un booleano.
+
+- Se agrego una funcion para inicializar el output grafico.
+
+- Se agrego una funcion para ejecutar la instruccion final del output grafico.
