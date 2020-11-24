@@ -17,88 +17,47 @@ Checar el archivo GramaticaActual.
 
 ### Ejemplo de codigo de entrada
 
-Program MeMySelf;
+    Program MeMySelf;
+    var
+        int i, j, p;
+        float valor;
 
-var
-
-    int i, j, p;
-    
-    float valor;
-    
-
-module int fact (int j);
-
-var
-
-    int i;
-    
-{
-
-    i = j + (p - j * 2 + j);
-    
-    if(j == 1) then
-    
-        {return(j);}
-        
-    else
-    
-        {return(j * fact(j - 1));}
-        
-}
-
-module void pinta (int y);
-
-var
-
-    int x;
-    
-{
-
-    x = 1;
-    
-    while (x < 11) do
-    
-        {
-        
-            Circle(y + x * 5);
-            
-            Color(x + 10);
-            
-            Size(10 - x);
-            
-            x = x + 1;
-            
-        }
-        
-}
-
-main()
-
-{
-
-    read(p);
-    
-    j = p * 2;
-    
-    Point(0, 0);
-    
-    i = fact(p);
-    
-    from i = 0 to 9 do
-    
-        {pinta(i * j);}
-        
-    while (i < 10) do
-    
+    module int fact (int j);
+    var
+        int i;
     {
-    
-        write("Hello World", fact(i));
-        
-        i = i + 1;
-        
+        i = j + (p - j * 2 + j);
+        if(j == 1) then
+            {return(j);}
+        else
+            {return(j * fact(j - 1));}
     }
-    
-}
+
+    module void pinta (int y);
+    var
+        int x;
+    {
+        x = 1;
+        while (x < 11) do{
+            Circle(y + x * 5);
+            Color(x + 10);
+            Size(10 - x);
+            x = x + 1;
+        }
+    }
+
+    main(){
+        read(p);
+        j = p * 2;
+        Point(0, 0);
+        i = fact(p);
+        from i = 0 to 9 do
+            {pinta(i * j);}
+        while (i < 10) do{
+            write("Hello World", fact(i));
+            i = i + 1;
+        }
+    }
 
 ## Avance 2
 14 de octubre 2020
@@ -119,89 +78,48 @@ Semántica básica
 
 ### Ejemplo de codigo de entrada
 
-Program MeMySelf;
-
-var
-
-    int i, j, p;
-    
-    float valor;
-
-module int fact (int j2, char f);
-
-var
-
-    int i2;
-    
-{
-
-    i = j + (p - j * 2 + j);
-    
-    valor = 'm';
-    
-    if(j == 1) then
-    
-        {return(j);}
+    Program MeMySelf;
+    var
+        int i, j, p;
+        float valor;
         
-    else
-    
-        {return(j * fact(j - 1, 'c'));}
-        
-}
-
-module void pinta (int y);
-
-var
-
-    int x;
-    
-{
-
-    x = 1;
-    
-    do (x < 11) while
-    
-        {
-        
-            Circle(y + x * 5);
-            
-            Color(x + 10);
-            
-            Size(10 - x);
-            
-            x = x + 1;
-            
-        }
-        
-}
-
-main()
-
-{
-
-    read(p);
-    
-    j = p * 2;
-    
-    Point(0, 0);
-    
-    i = fact(p);
-    
-    from i = 0 to 9 do
-    
-        {pinta(i * j);}
-        
-    do (i < 10) while
-    
+    module int fact (int j2, char f);
+    var
+        int i2;
     {
-    
-        write("Hello World", fact(i));
-        
-        i = i + 1;
-        
+        i = j + (p - j * 2 + j);
+        valor = 'm';
+        if(j == 1) then
+            {return(j);}
+        else
+            {return(j * fact(j - 1, 'c'));}
     }
-    
-}
+
+    module void pinta (int y);
+    var
+        int x;
+    {
+        x = 1;
+        do (x < 11) while{
+            Circle(y + x * 5);
+            Color(x + 10);
+            Size(10 - x);
+            x = x + 1;
+        }
+    }
+
+    main(){
+        read(p);
+        j = p * 2;
+        Point(0, 0);
+        i = fact(p);
+        from i = 0 to 9 do
+            {pinta(i * j);}
+        do (i < 10) while{
+            write("Hello World", fact(i));
+            i = i + 1;
+        }
+    }
 
 ## Avance 3
 24 de octubre 2020
@@ -229,107 +147,57 @@ Generación de código intermedio inicial
 
 ### Ejemplo de codigo de entrada
 
-Program MeMySelf;
-
-var
-
-    int i, j, p;
+    Program MeMySelf;
+    var
+        int i, j, p;
+        float valor;
+        char exam;
     
-    float valor;
-    
-    char exam;
-    
-module int fact (int j2, char f);
-
-var
-
-    int i2;
-    
-{
-
-    i = j + (p - j * 2 + j);
-    
-    exam = 'm';
-    
-    if(j == 1 + 2 & j == 'm') then
-    
-        {if(true | false) then
-        
-          {if(true & false | true) then
-          
-          {return(j);}}}
-          
-    else
-    
-        {return(j * fact(j - 1, 'c'));}
-        
-    return(9);
-    
-}
-
-module void pinta (int y);
-
-var
-
-    int x;
-    
-    float m;
-    
-{
-
-    x = 10;
-    
-    write(x,m+1,"q");
-    
-    read(y);
-    
-    pinta(9);
-    
-    m = 1 / 2;
-    
-    while (x < 11) do
-    
-        {
-        
-            Circle(y + x * 5);
-            
-            Color(x + 10);
-            
-            Size(10 - x);
-            
-            x = x + 1;
-            
-        }
-        
-}
-
-main()
-
-{
-
-    read(p,q);
-    
-    j = p * 2;
-    
-    Point(0, 0);
-    
-    i = fact(p, 'f');
-    
-    from i = 0 to 9 do
-    
-        {pinta(i * j);}
-        
-    while (i < 10) do
-    
+    module int fact (int j2, char f);
+    var
+        int i2;
     {
-    
-        write("Hello World", fact(i,exam) + 1, 'l');
-        
-        i = i + 1;
-        
+        i = j + (p - j * 2 + j);
+        exam = 'm';
+        if(j == 1 + 2 & j == 'm') then
+            {if(true | false) then
+                {if(true & false | true) then
+                    {return(j);}}}
+        else
+            {return(j * fact(j - 1, 'c'));}
+        return(9);
     }
-    
-}
+
+    module void pinta (int y);
+    var
+        int x;
+        float m;
+    {
+        x = 10;
+        write(x,m+1,"q");
+        read(y);
+        pinta(9);
+        m = 1 / 2;
+        while (x < 11) do{
+            Circle(y + x * 5);
+            Color(x + 10);
+            Size(10 - x);
+            x = x + 1;
+        }
+    }
+
+    main(){
+        read(p,q);
+        j = p * 2;
+        Point(0, 0);
+        i = fact(p, 'f');
+        from i = 0 to 9 do
+            {pinta(i * j);}
+        while (i < 10) do{
+            write("Hello World", fact(i,exam) + 1, 'l');
+            i = i + 1;
+        }
+    }
 
 ## Avance 4
 30 de octubre 2020
@@ -364,99 +232,53 @@ Generación de código intermedio para estatutos no-lineales e inicio de funcion
 
 ### Ejemplo de codigo de entrada
 
-Program MeMySelf;
-
-var
-
-    int i, j, p, q;
+    Program MeMySelf;
+    var
+        int i, j, p, q;
+        float valor;
+        char exam;
     
-    float valor;
-    
-    char exam;
-    
-module int fact (int j2, char f);
-
-var
-
-    int i2;
-    
-{
-
-    i2 = j2 + (j2 * 2);
-    
-    if(j2 == 1) then
-    
-        {return(j2);}
-        
-    else
-    
-        {return(j2 * fact(j2 - 1, 'c'));}
-        
-    return(9);
-    
-}
-
-module void pinta (int y);
-
-var
-
-    int x;
-    
-    float m;
-    
-{
-
-    x = 10;
-    
-    m = 1 / 2;
-    
-    write(x,m+1,"q");
-    
-    while (x < 11) do
-    
-        {
-        
-            Circle(y + x * 5);
-            
-            Color(x + 10);
-            
-            Size(10 - x);
-            
-            x = x + 1;
-            
-        }
-        
-}
-
-main()
-
-{
-
-    read(p,q);
-    
-    j = p * 2;
-    
-    exam = 'm';
-    
-    Point(0, 0);
-    
-    i = fact(p, 'f');
-    
-    from i = 0 + 3 to 9 - 1 do
-    
-        {pinta(i * j);}
-        
-    while (i < 10) do
-    
+    module int fact (int j2, char f);
+    var
+        int i2;
     {
-    
-        write("Hello World", fact(i,exam) + 1, 'l');
-        
-        i = i + 1;
-        
+        i2 = j2 + (j2 * 2);
+        if(j2 == 1) then
+            {return(j2);}
+        else
+            {return(j2 * fact(j2 - 1, 'c'));}
+        return(9);
     }
-    
-}
+
+    module void pinta (int y);
+    var
+        int x;
+        float m;
+    {
+        x = 10;
+        m = 1 / 2;
+        write(x,m+1,"q");
+        while (x < 11) do{
+            Circle(y + x * 5);
+            Color(x + 10);
+            Size(10 - x);
+            x = x + 1;
+        }
+    }
+
+    main(){
+        read(p,q);
+        j = p * 2;
+        exam = 'm';
+        Point(0, 0);
+        i = fact(p, 'f');
+        from i = 0 + 3 to 9 - 1 do
+            {pinta(i * j);}
+        while (i < 10) do{
+            write("Hello World", fact(i,exam) + 1, 'l');
+            i = i + 1;
+        }
+    }
 
 ## Avance 7
 21 de noviembre 2020
