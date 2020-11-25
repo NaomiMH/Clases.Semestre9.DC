@@ -298,3 +298,16 @@ Ejecución de Aplicación particular y Documentación parcial
 - Se agrego una funcion para inicializar el output grafico.
 
 - Se agrego una funcion para ejecutar la instruccion final del output grafico.
+
+## Final
+24 de noviembre 2020
+
+### Entrega
+Entrega de Documentacion
+
+### Avance
+- Se termino la Documentacion Final y el Manual de usuario
+
+- Se termino y subio el video de demostracion
+
+- Link del video en youtube: https://youtu.be/fT7V6O7Y4lI
