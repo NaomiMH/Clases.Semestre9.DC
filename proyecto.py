@@ -3,23 +3,13 @@ import ply.yacc as yacc
 import copy
 import turtle
 
+# Poner aqui el codigo a ejecutar
 data = '''
 Program MeMySelf;
-var
-     int x;
-     char y;
-
-module void funcion(int m);
-{
-     read(x,y);
-}
 
 main()
 {
-     x=3;
-     write(x);
-     funcion(x);
-     write(x,y,"Hello World");
+     write("Hello World");
 }
 '''
 
@@ -54,11 +44,10 @@ reserved = {
     'PenUp' : 'PENUP',
     'PenDown' : 'PENDOWN',
     'Color' : 'COLOR',
-    'Size' : 'SIZE',
-    'Clear' : 'CLEAR'
+    'Size' : 'SIZE'
 }
  
-tokens = ['AND','OR','LE','LT','GE','GT','EQ','NE','EQUAL','LPAREN','RPAREN','LPAREN2','RPAREN2','PUNCOM','COMA','NINT','NFLOAT','SCHAR','SSTRING','SVAR'] + list(reserved.values())
+tokens = ['AND','OR','LE','LT','GE','GT','EQ','NE','EQUAL','LPAREN','RPAREN','LPAREN2','RPAREN2','PUNCOM','COMA','NFLOAT','NINT','SCHAR','SSTRING','SVAR'] + list(reserved.values())
 
 literals = [ '+','-','*','/' ]
 
@@ -78,14 +67,14 @@ t_RPAREN2 = r'\}'
 t_PUNCOM  = r';'
 t_COMA    = r','
 
-def t_NINT(t):
-    r'\d+'
-    t.value = int(t.value)    
-    return t
-
 def t_NFLOAT(t):
     r'\d+\.\d+'
     t.value = float(t.value)    
+    return t
+
+def t_NINT(t):
+    r'\d+'
+    t.value = int(t.value)    
     return t
 
 def t_SCHAR(t):
@@ -156,6 +145,7 @@ tablaTipos["float"] = {"int": {}, "float": {}, "char": {}, "bool": {}}
 tablaTipos["char"] = {"int": {}, "float": {}, "char": {}, "bool": {}}
 tablaTipos["bool"] = {"int": {}, "float": {}, "char": {}, "bool": {}}
 
+tablaTipos["int"]["int"]["="] = "int"
 tablaTipos["int"]["int"]["+"] = "int"
 tablaTipos["int"]["int"]["-"] = "int"
 tablaTipos["int"]["int"]["*"] = "int"
@@ -169,6 +159,7 @@ tablaTipos["int"]["int"][">"] = "bool"
 tablaTipos["int"]["int"]["&"] = "error"
 tablaTipos["int"]["int"]["|"] = "error"
 
+tablaTipos["int"]["float"]["="] = "float"
 tablaTipos["int"]["float"]["+"] = "float"
 tablaTipos["int"]["float"]["-"] = "float"
 tablaTipos["int"]["float"]["*"] = "float"
@@ -182,6 +173,7 @@ tablaTipos["int"]["float"][">"] = "bool"
 tablaTipos["int"]["float"]["&"] = "error"
 tablaTipos["int"]["float"]["|"] = "error"
 
+tablaTipos["int"]["char"]["="] = "error"
 tablaTipos["int"]["char"]["+"] = "error"
 tablaTipos["int"]["char"]["-"] = "error"
 tablaTipos["int"]["char"]["*"] = "error"
@@ -195,6 +187,7 @@ tablaTipos["int"]["char"][">"] = "error"
 tablaTipos["int"]["char"]["&"] = "error"
 tablaTipos["int"]["char"]["|"] = "error"
 
+tablaTipos["int"]["bool"]["="] = "error"
 tablaTipos["int"]["bool"]["+"] = "error"
 tablaTipos["int"]["bool"]["-"] = "error"
 tablaTipos["int"]["bool"]["*"] = "error"
@@ -208,6 +201,7 @@ tablaTipos["int"]["bool"][">"] = "error"
 tablaTipos["int"]["bool"]["&"] = "error"
 tablaTipos["int"]["bool"]["|"] = "error"
 
+tablaTipos["float"]["int"]["="] = "float"
 tablaTipos["float"]["int"]["+"] = "float"
 tablaTipos["float"]["int"]["-"] = "float"
 tablaTipos["float"]["int"]["*"] = "float"
@@ -221,6 +215,7 @@ tablaTipos["float"]["int"][">"] = "bool"
 tablaTipos["float"]["int"]["&"] = "error"
 tablaTipos["float"]["int"]["|"] = "error"
 
+tablaTipos["float"]["float"]["="] = "float"
 tablaTipos["float"]["float"]["+"] = "float"
 tablaTipos["float"]["float"]["-"] = "float"
 tablaTipos["float"]["float"]["*"] = "float"
@@ -234,6 +229,7 @@ tablaTipos["float"]["float"][">"] = "bool"
 tablaTipos["float"]["float"]["&"] = "error"
 tablaTipos["float"]["float"]["|"] = "error"
 
+tablaTipos["float"]["char"]["="] = "error"
 tablaTipos["float"]["char"]["+"] = "error"
 tablaTipos["float"]["char"]["-"] = "error"
 tablaTipos["float"]["char"]["*"] = "error"
@@ -247,6 +243,7 @@ tablaTipos["float"]["char"][">"] = "error"
 tablaTipos["float"]["char"]["&"] = "error"
 tablaTipos["float"]["char"]["|"] = "error"
 
+tablaTipos["float"]["bool"]["="] = "error"
 tablaTipos["float"]["bool"]["+"] = "error"
 tablaTipos["float"]["bool"]["-"] = "error"
 tablaTipos["float"]["bool"]["*"] = "error"
@@ -260,6 +257,7 @@ tablaTipos["float"]["bool"][">"] = "error"
 tablaTipos["float"]["bool"]["&"] = "error"
 tablaTipos["float"]["bool"]["|"] = "error"
 
+tablaTipos["char"]["int"]["="] = "error"
 tablaTipos["char"]["int"]["+"] = "error"
 tablaTipos["char"]["int"]["-"] = "error"
 tablaTipos["char"]["int"]["*"] = "error"
@@ -273,6 +271,7 @@ tablaTipos["char"]["int"][">"] = "error"
 tablaTipos["char"]["int"]["&"] = "error"
 tablaTipos["char"]["int"]["|"] = "error"
 
+tablaTipos["char"]["float"]["="] = "error"
 tablaTipos["char"]["float"]["+"] = "error"
 tablaTipos["char"]["float"]["-"] = "error"
 tablaTipos["char"]["float"]["*"] = "error"
@@ -286,6 +285,7 @@ tablaTipos["char"]["float"][">"] = "error"
 tablaTipos["char"]["float"]["&"] = "error"
 tablaTipos["char"]["float"]["|"] = "error"
 
+tablaTipos["char"]["char"]["="] = "char"
 tablaTipos["char"]["char"]["+"] = "error"
 tablaTipos["char"]["char"]["-"] = "error"
 tablaTipos["char"]["char"]["*"] = "error"
@@ -299,6 +299,7 @@ tablaTipos["char"]["char"][">"] = "error"
 tablaTipos["char"]["char"]["&"] = "error"
 tablaTipos["char"]["char"]["|"] = "error"
 
+tablaTipos["char"]["bool"]["="] = "error"
 tablaTipos["char"]["bool"]["+"] = "error"
 tablaTipos["char"]["bool"]["-"] = "error"
 tablaTipos["char"]["bool"]["*"] = "error"
@@ -312,6 +313,7 @@ tablaTipos["char"]["bool"][">"] = "error"
 tablaTipos["char"]["bool"]["&"] = "error"
 tablaTipos["char"]["bool"]["|"] = "error"
 
+tablaTipos["bool"]["int"]["="] = "error"
 tablaTipos["bool"]["int"]["+"] = "error"
 tablaTipos["bool"]["int"]["-"] = "error"
 tablaTipos["bool"]["int"]["*"] = "error"
@@ -325,6 +327,7 @@ tablaTipos["bool"]["int"][">"] = "error"
 tablaTipos["bool"]["int"]["&"] = "error"
 tablaTipos["bool"]["int"]["|"] = "error"
 
+tablaTipos["bool"]["float"]["="] = "error"
 tablaTipos["bool"]["float"]["+"] = "error"
 tablaTipos["bool"]["float"]["-"] = "error"
 tablaTipos["bool"]["float"]["*"] = "error"
@@ -338,6 +341,7 @@ tablaTipos["bool"]["float"][">"] = "error"
 tablaTipos["bool"]["float"]["&"] = "error"
 tablaTipos["bool"]["float"]["|"] = "error"
 
+tablaTipos["bool"]["char"]["="] = "error"
 tablaTipos["bool"]["char"]["+"] = "error"
 tablaTipos["bool"]["char"]["-"] = "error"
 tablaTipos["bool"]["char"]["*"] = "error"
@@ -351,6 +355,7 @@ tablaTipos["bool"]["char"][">"] = "error"
 tablaTipos["bool"]["char"]["&"] = "error"
 tablaTipos["bool"]["char"]["|"] = "error"
 
+tablaTipos["bool"]["bool"]["="] = "bool"
 tablaTipos["bool"]["bool"]["+"] = "error"
 tablaTipos["bool"]["bool"]["-"] = "error"
 tablaTipos["bool"]["bool"]["*"] = "error"
@@ -386,15 +391,15 @@ def buscaTipo(tipo):
      raise CalcError("Variable invalida")
 
 def buscaVariable(temparam,tempvar,var):
+     # Busca la variable en entre las variables globales
      if variables["main"]["var"].get(var) != None:
           return variables["main"]["var"][var]
      elif variables["active sys"] != "main":
+          # Si la funcion activa no es main, busca entre los parametros y variables locales recibidos
           if tempvar.get(var) != None:
                return tempvar[var]
           elif temparam.get(var) != None:
                return temparam[var]
-     elif (type(var) == type(1) or type(var) == type(1.0) or var[0] == "'" or var[0] == '"' or var == "true" or var == "false"):
-          return "constante"
      print("ERROR: Variable no encontrada")
      raise CalcError("Variable invalida")
 
@@ -449,10 +454,13 @@ def call(function,param,var):
           d = variables[function]["run"][contador][3]
           # print(contador + 1, ":", a, "|", b, "|", c, "|", d)
           if a == "read":
+               # Recibe el apuntador a la variable
                vard = buscaVariable(param,var,d)
                vard["value"] = read(vard["type"])
           elif (a == '*' or a == '/' or a == '-' or a == '+' or a == '==' or a == '>' or a == '<' or a == '<=' or a == '>=' or a == '!=' or a == '&' or a == '|'):
+               # Recibe el apuntador a la variable
                varb = buscaVariable(param,var,b)
+               # Comprueba que la variable se encuentre inicializada
                if varb.get("value") == None:
                     print("ERROR: Variable no inicializada")
                     raise CalcError("Expresion invalida")
@@ -461,18 +469,25 @@ def call(function,param,var):
                     print("ERROR: Variable no inicializada")
                     raise CalcError("Expresion invalida")
                vard = buscaVariable(param,var,d)
+               # Recibe el resultado de la operacion
                vard["value"] = op(a,varb["value"],varc["value"])
           elif a == '=':
+               # Recibe el apuntador a la variable
                varb = buscaVariable(param,var,b)
+               # Comprueba que la variable se encuentre inicializada
                if varb.get("value") == None:
                     print("ERROR: Variable no inicializada")
                     raise CalcError("Expresion invalida")
                vard = buscaVariable(param,var,d)
+               # Ejecuta la asignacion
                vard["value"] = varb["value"]
           elif a == "callr" or a == "call":
+               # Activa la nueva funcion a ejecutar
                variables["active sys"] = b
+               # Hace una copia local de los parametros
                tparam = copy.deepcopy(variables[b]["param"])
                tcont = 0
+               # Inicializa cada parametro con el valor recibido
                for x in tparam:
                     varc = buscaVariable(param,var,c[tcont])
                     if varc.get("value") == None:
@@ -481,8 +496,12 @@ def call(function,param,var):
                     tparam[x]["value"] = varc["value"]
                     tcont = tcont + 1
                if a == "callr":
+                    # Ejecuta la funcion con parametros locales, ya inicializados, y envia una copia local de las variables
+                    # Guarda el retorno de la funcion en una variable temporal
                     temp = call(b,tparam,copy.deepcopy(variables[b]["var"]))
+                    # Activa la funcion anterior
                     variables["active sys"] = function
+                    # Si la funcion regresa un valor, lo guarda en la variable asignada
                     if temp == "Sys None":
                          print("ERROR: No llego a un return la funcion")
                          raise CalcError("Estatuto faltante")
@@ -490,31 +509,39 @@ def call(function,param,var):
                          vard = buscaVariable(param,var,d)
                          vard["value"] = temp
                else:
+                    # Ejecuta la funcion con parametros locales, ya inicializados, y envia una copia local de las variables
                     call(b,tparam,copy.deepcopy(variables[b]["var"]))
+                    # Activa la funcion anterior
                     variables["active sys"] = function
           elif a == "gotof":
                varb = buscaVariable(param,var,b)
+               # Si el valor de la variable es falso, actualiza el contador
                if varb["value"] == False:
                     contador = contador + d - 1
           elif a == "goto":
+               # Actualiza el contador
                contador = contador + d - 1
           elif a == "return":
                vard = buscaVariable(param,var,d)
                if vard.get("value") == None:
                     print("ERROR: Variable no inicializada")
                     raise CalcError("Expresion invalida")
+               # Regresa el valor de la variable
                return vard["value"]
           elif a == "write":
                vard = buscaVariable(param,var,d)
                if vard.get("value") == None:
                     print("ERROR: Variable no inicializada")
                     raise CalcError("Expresion invalida")
+               # Imprime el valor de la variable
                print(vard["value"])
           elif a == "callf":
                tempValues = []
+               # Crea un listado con los valores de los parametros recibidos
                for value in c:
                     varc = buscaVariable(param,var,value)
                     tempValues.append(varc["value"])
+               # Llama a ejecutar la funcion especial
                callf(b,tempValues)
           else:
                print("ERROR: CALL01")
@@ -532,11 +559,13 @@ def call(function,param,var):
 # Size(nomber) => turtle.pensize(nomber)
 
 def openOutput():
+     # Comprueba que el output grafico no haya sido abierto ya
      if variables["output active"] == False:
           variables["output active"] = True
           turtle.shape("turtle")
 
 def callf(func,param):
+     # Llama a abrir el output grafico
      openOutput()
      if func == "PenUp":
           turtle.penup()
@@ -557,6 +586,7 @@ def callf(func,param):
           raise CalcError("Error en sistema")
 
 def closeOutput():
+     # Comprueba que el output grafico haya sido abierto
      if variables["output active"] == True:
           turtle.exitonclick()
 
@@ -575,9 +605,13 @@ def read(tipo):
      raise CalcError("Error en sistema")
 
 def run():
+     # Declara a main como función activa
      variables["active sys"] = "main"
+     # Declara False al output grafico
      variables["output active"] = False
+     # Comienza la ejecución con un apuntador a las variables y parámetros globales de main
      call("main",variables["main"]["param"],variables["main"]["var"])
+     # Manda a llamar a la última instrucción del output grafico
      closeOutput()
      # print("Run!!")
 
@@ -606,7 +640,7 @@ def p_program(p):
                     elif a == "=":
                          tb = buscaTipo(b)
                          td = buscaTipo(d)
-                         if (tb != td or (tb == "int" and td != "float")):
+                         if (tablaTipos[tb][td][a] != td):
                               print("ERROR: Tipo de variable invalido en asignacion")
                               raise CalcError("Estatuto invalido")
                     elif a == "return":
@@ -1108,7 +1142,7 @@ def p_desicion(p):
           temp.append(("gotof", p[3][len(p[3])-1][3], None, len(p[7])+2))
      temp.extend(p[7])
      if p[9] != None:
-          temp.append(("goto", None, None, len(p[9])))
+          temp.append(("goto", None, None, len(p[9])+1))
           temp.extend(p[9])
      p[0] = temp
      pass
@@ -1251,7 +1285,7 @@ def p_nocondicional(p):
      variables[variables["active sys"]]["var"][varTemp2] = {"type": "int", "value": 1}
      temp.append(("+", p[2], varTemp2, varTemp))
      temp.append(("=", varTemp, None, p[2]))
-     temp.append(("goto", None, None, -(len(p[9]) + len(p[6]) + 4)))
+     temp.append(("goto", None, None, -(len(p[9]) + len(p[6]) + 3)))
      p[0] = temp
      pass
 
@@ -1277,7 +1311,6 @@ def p_funespecial02(p):
      funespecial : POINT LPAREN RPAREN PUNCOM
                  | PENUP LPAREN RPAREN PUNCOM
                  | PENDOWN LPAREN RPAREN PUNCOM
-                 | CLEAR LPAREN RPAREN PUNCOM
      '''
      temp = []
      param = []
